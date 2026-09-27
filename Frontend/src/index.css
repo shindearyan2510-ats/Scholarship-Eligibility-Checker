@@ -1,0 +1,78 @@
+:root {
+  --brand: #1d5fbf;
+  --brand-dark: #123f85;
+  --success-bg: #eafaf0;
+  --danger-bg: #fdf0f0;
+}
+
+body {
+  background-color: #f5f7fb;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: #fff;
+  padding: 64px 0;
+}
+
+.hero h1 {
+  font-weight: 700;
+}
+
+.card-elevated {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+.result-card-qualified {
+  border-left: 5px solid #2e9e5b;
+  background-color: var(--success-bg);
+  border-radius: 10px;
+}
+
+.result-card-not-qualified {
+  border-left: 5px solid #c94b4b;
+  background-color: var(--danger-bg);
+  border-radius: 10px;
+}
+
+.stat-box {
+  border-radius: 14px;
+  padding: 22px;
+  color: #fff;
+}
+
+.footer {
+  background-color: #10233f;
+  color: #cdd8e8;
+  padding: 24px 0;
+  margin-top: 60px;
+}
+
+.sidebar {
+  min-height: 100vh;
+  background-color: #10233f;
+  color: #fff;
+}
+
+.sidebar a {
+  color: #cdd8e8;
+  text-decoration: none;
+  display: block;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background-color: var(--brand);
+  color: #fff;
+}
