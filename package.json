@@ -5,7 +5,8 @@
   "scripts": {
     "install:backend": "cd Backend && npm install",
     "install:frontend": "cd Frontend && npm install",
-    "build": "npm install --prefix Frontend && npm run build --prefix Frontend",
+    "install": "npm run install:backend && npm run install:frontend",
+    "build": "cd Frontend && npm install && npm run build",
     "start": "node Backend/Server.js",
     "dev:backend": "cd Backend && npm run dev",
     "dev:frontend": "cd Frontend && npm run dev -- --host 0.0.0.0",
