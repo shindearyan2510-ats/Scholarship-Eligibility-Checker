@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const FILTERS = ["All", "Government", "Private"];
 
 const ScholarshipsPage = () => {
@@ -12,7 +14,7 @@ const ScholarshipsPage = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/scholarships")
+      .get(`${API_BASE}/scholarships`)
       .then((res) => setScholarships(res.data.data))
       .catch(() =>
         setError(

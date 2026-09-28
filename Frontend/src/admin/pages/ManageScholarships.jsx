@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const ManageScholarships = () => {
   const [scholarships, setScholarships] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +11,7 @@ const ManageScholarships = () => {
   const loadScholarships = () => {
     setLoading(true);
     axios
-      .get("http://localhost:5000/scholarships")
+      .get(`${API_BASE}/scholarships`)
       .then((res) => setScholarships(res.data.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -23,7 +25,7 @@ const ManageScholarships = () => {
     if (!window.confirm("Delete this scholarship?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/scholarships/${id}`);
+      await axios.delete(`${API_BASE}/scholarships/${id}`);
       loadScholarships();
     } catch (err) {
       alert("Failed to delete scholarship.");
