@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const CATEGORY_OPTIONS = ["Open", "OBC", "SC", "ST", "EWS"];
 const COURSE_OPTIONS = ["Any", "Engineering", "Diploma", "Science", "Commerce", "Arts"];
 
@@ -46,10 +48,7 @@ const CheckEligibilityPage = () => {
     setResult(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/check-eligibility",
-        formData
-      );
+      const response = await axios.post(`${API_BASE}/check-eligibility`, formData);
       setResult(response.data);
     } catch (err) {
       if (err.response) {

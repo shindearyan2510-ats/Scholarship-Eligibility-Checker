@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const CATEGORY_OPTIONS = ["All", "Open", "OBC", "SC", "ST", "EWS"];
 const COURSE_OPTIONS = ["Any", "Engineering", "Diploma", "Science", "Commerce", "Arts"];
 
@@ -29,7 +31,7 @@ const ScholarshipForm = () => {
   useEffect(() => {
     if (isEdit) {
       axios
-        .get(`http://localhost:5000/scholarships/${id}`)
+        .get(`${API_BASE}/scholarships/${id}`)
         .then((res) => setFormData(res.data.data))
         .catch(() => setError("Could not load scholarship details."))
         .finally(() => setLoading(false));
@@ -69,9 +71,9 @@ const ScholarshipForm = () => {
 
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:5000/scholarships/${id}`, formData);
+        await axios.put(`${API_BASE}/scholarships/${id}`, formData);
       } else {
-        await axios.post("http://localhost:5000/scholarships", formData);
+        await axios.post(`${API_BASE}/scholarships`, formData);
       }
       navigate("/admin/scholarships");
     } catch (err) {

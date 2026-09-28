@@ -1,0 +1,15 @@
+{
+  "name": "scholarship-eligibility-checker",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "install:backend": "cd Backend && npm install",
+    "install:frontend": "cd Frontend && npm install",
+    "dev:backend": "cd Backend && npm run dev",
+    "dev:frontend": "cd Frontend && npm run dev -- --host 0.0.0.0",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

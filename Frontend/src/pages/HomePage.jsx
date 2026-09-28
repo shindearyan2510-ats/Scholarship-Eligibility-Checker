@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const HomePage = () => {
   const [scholarships, setScholarships] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/scholarships")
+      .get(`${API_BASE}/scholarships`)
       .then((res) => setScholarships(res.data.data))
       .catch(() => setScholarships([]))
       .finally(() => setLoading(false));
