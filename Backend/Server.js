@@ -8,11 +8,11 @@ import fs from "fs";
 import scholarshipRoutes from "./routes/scholarshipRoutes.js";
 import eligibilityRoutes from "./routes/eligibilityRoutes.js";
 
-dotenv.config();
-
-const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+const app = express();
 const distPath = path.resolve(__dirname, "../Frontend/dist");
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
   .split(",")
