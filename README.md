@@ -21,7 +21,6 @@ ScholarshipEligibilityChecker/
 │   ├── routes/
 │   │   ├── scholarshipRoutes.js
 │   │   └── eligibilityRoutes.js
-│   ├── database.sql              # run this first to create DB + tables
 │   ├── Server.js
 │   └── package.json
 └── Frontend/
@@ -35,9 +34,14 @@ ScholarshipEligibilityChecker/
 ## Setup — step by step (VS Code)
 
 ### 1. Database
-1. Open MySQL Workbench (or the `mysql` CLI).
-2. Run the script in `Backend/database.sql`. It creates the `scholarship_checker`
-   database, the `scholarships` table, and adds 7 sample scholarships.
+1. Create an empty MySQL database, or select the database already provided by
+   your hosting provider.
+2. Set `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, and
+   `MYSQL_DATABASE` in the project-root `.env` file locally or in the hosting
+   provider's environment settings.
+3. On startup, the backend connects to the selected database and creates the
+   `scholarships` table if it does not exist. The database user must have
+   permission to create tables. Add scholarship records from the admin page.
 
 ### 2. Backend
 ```bash

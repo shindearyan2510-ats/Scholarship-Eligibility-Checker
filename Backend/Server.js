@@ -7,6 +7,7 @@ import fs from "fs";
 
 import scholarshipRoutes from "./routes/scholarshipRoutes.js";
 import eligibilityRoutes from "./routes/eligibilityRoutes.js";
+import { initializeDatabase } from "./Config/db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,9 +62,16 @@ if (fs.existsSync(distPath)) {
 
 const PORT = Number(process.env.PORT) || 5000;
 
-app.listen(PORT, () => {
-  console.log("=================================");
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌐 http://localhost:${PORT}`);
-  console.log("=================================");
-});
+initializeDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log("=================================");
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🌐 http://localhost:${PORT}`);
+      console.log("=================================");
+    });
+  })
+  .catch((error) => {
+    console.error("❌ Backend startup failed:", error.message);
+    process.exitCode = 1;
+  });
