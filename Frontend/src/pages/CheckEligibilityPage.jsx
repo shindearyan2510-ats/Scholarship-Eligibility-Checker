@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
-
-const CATEGORY_OPTIONS = ["Open", "OBC", "SC", "ST", "EWS"];
-const COURSE_OPTIONS = ["Any", "Engineering", "Diploma", "Science", "Commerce", "Arts"];
-
 const initialForm = {
-  category: [],
+  category: "Open",
   income: "",
   percentage: "",
-  courseType: [],
+  courseType: "Any",
 };
 
 const CheckEligibilityPage = () => {
@@ -23,32 +18,17 @@ const CheckEligibilityPage = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  // Lets the student tick more than one option — handy if they're not sure
-  // which category applies to them, or want to check more than one course.
-  const toggleOption = (field, value) => {
-    setFormData((prev) => {
-      const current = prev[field];
-      const next = current.includes(value)
-        ? current.filter((v) => v !== value)
-        : [...current, value];
-      return { ...prev, [field]: next };
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    if (formData.category.length === 0 || formData.courseType.length === 0) {
-      setError("Please select at least one category and one course.");
-      return;
-    }
-
     setLoading(true);
     setResult(null);
 
     try {
-      const response = await axios.post(`${API_BASE}/check-eligibility`, formData);
+      const response = await axios.post(
+        "http://localhost:5000/check-eligibility",
+        formData
+      );
       setResult(response.data);
     } catch (err) {
       if (err.response) {
@@ -75,47 +55,42 @@ const CheckEligibilityPage = () => {
             <form onSubmit={handleSubmit}>
               <div className="row g-3">
                 <div className="col-md-6">
-                  <label className="form-label d-block">
-                    Category <span className="text-muted small">(select one or more)</span>
+                  <label htmlFor="category" className="form-label">
+                    Category
                   </label>
-                  <div className="d-flex flex-wrap gap-3">
-                    {CATEGORY_OPTIONS.map((opt) => (
-                      <div className="form-check" key={opt}>
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id={`category-${opt}`}
-                          checked={formData.category.includes(opt)}
-                          onChange={() => toggleOption("category", opt)}
-                        />
-                        <label className="form-check-label" htmlFor={`category-${opt}`}>
-                          {opt}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                  <select
+                    id="category"
+                    className="form-select"
+                    value={formData.category}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="Open">Open</option>
+                    <option value="OBC">OBC</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
+                    <option value="EWS">EWS</option>
+                  </select>
                 </div>
 
                 <div className="col-md-6">
-                  <label className="form-label d-block">
-                    Course <span className="text-muted small">(select one or more)</span>
+                  <label htmlFor="courseType" className="form-label">
+                    Course
                   </label>
-                  <div className="d-flex flex-wrap gap-3">
-                    {COURSE_OPTIONS.map((opt) => (
-                      <div className="form-check" key={opt}>
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id={`courseType-${opt}`}
-                          checked={formData.courseType.includes(opt)}
-                          onChange={() => toggleOption("courseType", opt)}
-                        />
-                        <label className="form-check-label" htmlFor={`courseType-${opt}`}>
-                          {opt === "Any" ? "Any / Other" : opt}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                  <select
+                    id="courseType"
+                    className="form-select"
+                    value={formData.courseType}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="Any">Any / Other</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Science">Science</option>
+                    <option value="Commerce">Commerce</option>
+                    <option value="Arts">Arts</option>
+                  </select>
                 </div>
 
                 <div className="col-md-6">
