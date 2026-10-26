@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
-
 const SECTOR_ICONS = {
   Health: "🩺",
   Housing: "🏠",
@@ -25,7 +23,7 @@ const WelfareSchemesSection = () => {
 
   useEffect(() => {
     axios
-      .get(`${API_BASE}/welfare-schemes`)
+      .get("http://localhost:5000/welfare-schemes")
       .then((res) => setSchemes(res.data.data))
       .catch(() =>
         setError(

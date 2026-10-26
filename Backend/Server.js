@@ -1,19 +1,15 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import fs from "fs";
 
 import scholarshipRoutes from "./routes/scholarshipRoutes.js";
 import eligibilityRoutes from "./routes/eligibilityRoutes.js";
 import { databaseReady, initializeDatabase } from "./Config/db.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
-
 const app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distPath = path.resolve(__dirname, "../Frontend/dist");
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
   .split(",")
@@ -42,7 +38,7 @@ app.use(["/scholarships", "/check-eligibility"], (req, res, next) => {
 
   return res.status(503).json({
     success: false,
-    message: "Database is unavailable. Check the MySQL environment variables and remote access permissions.",
+    message: "Database is unavailable. Check the MySQL environment variables and connection settings.",
   });
 });
 
@@ -76,17 +72,13 @@ if (fs.existsSync(distPath)) {
 
 const PORT = Number(process.env.PORT) || 5000;
 
-app.listen(PORT, () => {
-  console.log("=================================");
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌐 http://localhost:${PORT}`);
-  console.log("=================================");
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-initializeDatabase()
-  .catch((error) => {
-    console.error(
-      "❌ Database unavailable; website is running without database features:",
-      error.code || error.message
-    );
-  });
+initializeDatabase().catch((error) => {
+  console.error(
+    "Database unavailable; API is running without database features:",
+    error.code || error.message
+  );
+});

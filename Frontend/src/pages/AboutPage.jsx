@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
-
 const AboutPage = () => {
   const [scholarships, setScholarships] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +8,7 @@ const AboutPage = () => {
 
   useEffect(() => {
     axios
-      .get(`${API_BASE}/scholarships`)
+      .get("http://localhost:5000/scholarships")
       .then((res) => setScholarships(res.data?.data || []))
       .catch(() =>
         setError(

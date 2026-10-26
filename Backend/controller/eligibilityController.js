@@ -1,26 +1,17 @@
 import db from "../Config/db.js";
-import { fromStoredValue, overlapsOrWildcard } from "../utils/arrayField.js";
 
 // POST /check-eligibility
 // Takes the student's details and checks them against every scholarship
 // stored in the database, returning which ones they qualify for and why
 // they don't qualify for the rest.
-//
-// category and courseType now arrive as arrays (the student can tick more
-// than one, e.g. if they're unsure which category applies) — a scholarship
-// counts as a category/course match if there's any overlap between what the
-// student picked and the scholarship's own (also multi-select) list.
 export const checkEligibility = (req, res) => {
   const { category, income, percentage, courseType } = req.body;
 
-  const categories = Array.isArray(category) ? category : category ? [category] : [];
-  const courseTypes = Array.isArray(courseType) ? courseType : courseType ? [courseType] : [];
-
   if (
-    categories.length === 0 ||
+    !category ||
     income === undefined ||
     percentage === undefined ||
-    courseTypes.length === 0
+    !courseType
   ) {
     return res.status(400).json({
       success: false,
@@ -46,18 +37,12 @@ export const checkEligibility = (req, res) => {
     const qualified = [];
     const notQualified = [];
 
-    scholarships.forEach((row) => {
+    scholarships.forEach((s) => {
       const reasons = [];
-      const allowedCategories = fromStoredValue(row.category);
-      const allowedCourses = fromStoredValue(row.course_type);
-      const s = { ...row, category: allowedCategories, course_type: allowedCourses };
 
-      // Rule 1: at least one selected category must match (unless the
-      // scholarship is open to "All")
-      if (!overlapsOrWildcard(allowedCategories, categories, "All")) {
-        reasons.push(
-          `Your selected category (${categories.join(", ")}) does not match the required category (${allowedCategories.join(", ")})`
-        );
+      // Rule 1: Category must match (unless scholarship is open to "All")
+      if (s.category !== "All" && s.category !== category) {
+        reasons.push(`Category "${category}" does not match required category "${s.category}"`);
       }
 
       // Rule 2: Family income must be within the limit
@@ -71,12 +56,9 @@ export const checkEligibility = (req, res) => {
         reasons.push(`Marks are ${s.min_percentage - studentPercentage}% below the required ${s.min_percentage}%`);
       }
 
-      // Rule 4: at least one selected course type must match (unless the
-      // scholarship applies to "Any" course)
-      if (!overlapsOrWildcard(allowedCourses, courseTypes, "Any")) {
-        reasons.push(
-          `Your selected course (${courseTypes.join(", ")}) does not match the required course (${allowedCourses.join(", ")})`
-        );
+      // Rule 4: Course type must match (unless scholarship applies to "Any" course)
+      if (s.course_type !== "Any" && s.course_type !== courseType) {
+        reasons.push(`Course type "${courseType}" does not match required course "${s.course_type}"`);
       }
 
       if (reasons.length === 0) {

@@ -2,21 +2,19 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
-
 const Dashboard = () => {
   const [scholarships, setScholarships] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get(`${API_BASE}/scholarships`)
+      .get("http://localhost:5000/scholarships")
       .then((res) => setScholarships(res.data.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
-  const categories = [...new Set(scholarships.flatMap((s) => s.category || []))];
+  const categories = [...new Set(scholarships.map((s) => s.category))];
   const govtCount = scholarships.filter((s) => s.provider_type === "Government").length;
   const privateCount = scholarships.filter((s) => s.provider_type === "Private").length;
 
@@ -73,7 +71,7 @@ const Dashboard = () => {
                 <tr key={s.id}>
                   <td>{s.name}</td>
                   <td>{s.provider_type}</td>
-                  <td>{(s.category || []).join(", ")}</td>
+                  <td>{s.category}</td>
                   <td>₹{Number(s.max_income).toLocaleString("en-IN")}</td>
                   <td>{s.min_percentage}%</td>
                 </tr>

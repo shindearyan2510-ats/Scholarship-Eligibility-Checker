@@ -2,16 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
-
-const CATEGORY_OPTIONS = ["All", "Open", "OBC", "SC", "ST", "EWS"];
-const COURSE_OPTIONS = ["Any", "Engineering", "Diploma", "Science", "Commerce", "Arts"];
-
 const emptyForm = {
   name: "",
   provider_type: "Government",
-  category: ["All"],
-  course_type: ["Any"],
+  category: "All",
+  course_type: "Any",
   max_income: "",
   min_percentage: "",
   description: "",
@@ -31,7 +26,7 @@ const ScholarshipForm = () => {
   useEffect(() => {
     if (isEdit) {
       axios
-        .get(`${API_BASE}/scholarships/${id}`)
+        .get(`http://localhost:5000/scholarships/${id}`)
         .then((res) => setFormData(res.data.data))
         .catch(() => setError("Could not load scholarship details."))
         .finally(() => setLoading(false));
@@ -42,28 +37,6 @@ const ScholarshipForm = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  // Toggles one checkbox within a multi-select field (category or
-  // course_type). Picking the wildcard ("All" / "Any") clears every other
-  // option since it already covers them; picking a specific option drops
-  // the wildcard. If the admin unchecks everything, we fall back to the
-  // wildcard so the field is never left empty.
-  const toggleOption = (field, value, wildcard) => {
-    setFormData((prev) => {
-      const current = prev[field];
-
-      if (value === wildcard) {
-        return { ...prev, [field]: [wildcard] };
-      }
-
-      const withoutWildcard = current.filter((v) => v !== wildcard);
-      const next = withoutWildcard.includes(value)
-        ? withoutWildcard.filter((v) => v !== value)
-        : [...withoutWildcard, value];
-
-      return { ...prev, [field]: next.length ? next : [wildcard] };
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -71,9 +44,9 @@ const ScholarshipForm = () => {
 
     try {
       if (isEdit) {
-        await axios.put(`${API_BASE}/scholarships/${id}`, formData);
+        await axios.put(`http://localhost:5000/scholarships/${id}`, formData);
       } else {
-        await axios.post(`${API_BASE}/scholarships`, formData);
+        await axios.post("http://localhost:5000/scholarships", formData);
       }
       navigate("/admin/scholarships");
     } catch (err) {
@@ -123,49 +96,43 @@ const ScholarshipForm = () => {
           </div>
 
           <div className="col-md-6">
-            <label className="form-label d-block">
-              Category <span className="text-muted small">(select one or more)</span>
+            <label htmlFor="category" className="form-label">
+              Category
             </label>
-            <div className="d-flex flex-wrap gap-3">
-              {CATEGORY_OPTIONS.map((opt) => (
-                <div className="form-check" key={opt}>
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id={`category-${opt}`}
-                    checked={formData.category.includes(opt)}
-                    onChange={() => toggleOption("category", opt, "All")}
-                  />
-                  <label className="form-check-label" htmlFor={`category-${opt}`}>
-                    {opt}
-                  </label>
-                </div>
-              ))}
-            </div>
+            <select
+              id="category"
+              className="form-select"
+              value={formData.category}
+              onChange={handleChange}
+            >
+              <option value="All">All</option>
+              <option value="Open">Open</option>
+              <option value="OBC">OBC</option>
+              <option value="SC">SC</option>
+              <option value="ST">ST</option>
+              <option value="EWS">EWS</option>
+            </select>
           </div>
         </div>
 
         <div className="row g-3 mb-3">
           <div className="col-md-6">
-            <label className="form-label d-block">
-              Course Type <span className="text-muted small">(select one or more)</span>
+            <label htmlFor="course_type" className="form-label">
+              Course Type
             </label>
-            <div className="d-flex flex-wrap gap-3">
-              {COURSE_OPTIONS.map((opt) => (
-                <div className="form-check" key={opt}>
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id={`course_type-${opt}`}
-                    checked={formData.course_type.includes(opt)}
-                    onChange={() => toggleOption("course_type", opt, "Any")}
-                  />
-                  <label className="form-check-label" htmlFor={`course_type-${opt}`}>
-                    {opt}
-                  </label>
-                </div>
-              ))}
-            </div>
+            <select
+              id="course_type"
+              className="form-select"
+              value={formData.course_type}
+              onChange={handleChange}
+            >
+              <option value="Any">Any</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Diploma">Diploma</option>
+              <option value="Science">Science</option>
+              <option value="Commerce">Commerce</option>
+              <option value="Arts">Arts</option>
+            </select>
           </div>
 
           <div className="col-md-6">

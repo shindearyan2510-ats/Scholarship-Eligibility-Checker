@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
-
 const ManageScholarships = () => {
   const [scholarships, setScholarships] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +9,7 @@ const ManageScholarships = () => {
   const loadScholarships = () => {
     setLoading(true);
     axios
-      .get(`${API_BASE}/scholarships`)
+      .get("http://localhost:5000/scholarships")
       .then((res) => setScholarships(res.data.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -25,7 +23,7 @@ const ManageScholarships = () => {
     if (!window.confirm("Delete this scholarship?")) return;
 
     try {
-      await axios.delete(`${API_BASE}/scholarships/${id}`);
+      await axios.delete(`http://localhost:5000/scholarships/${id}`);
       loadScholarships();
     } catch (err) {
       alert("Failed to delete scholarship.");
@@ -74,8 +72,8 @@ const ManageScholarships = () => {
                         {s.provider_type}
                       </span>
                     </td>
-                    <td>{(s.category || []).join(", ")}</td>
-                    <td>{(s.course_type || []).join(", ")}</td>
+                    <td>{s.category}</td>
+                    <td>{s.course_type}</td>
                     <td>₹{Number(s.max_income).toLocaleString("en-IN")}</td>
                     <td>{s.min_percentage}%</td>
                     <td>

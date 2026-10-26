@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
-
 const FILTERS = ["All", "Government", "Private"];
 
 const ScholarshipsPage = () => {
@@ -14,7 +12,7 @@ const ScholarshipsPage = () => {
 
   useEffect(() => {
     axios
-      .get(`${API_BASE}/scholarships`)
+      .get("http://localhost:5000/scholarships")
       .then((res) => setScholarships(res.data.data))
       .catch(() =>
         setError(
@@ -93,18 +91,12 @@ const ScholarshipsPage = () => {
                     {s.provider_type}
                   </span>
                 </div>
-                <div className="mb-3">
-                  {(s.category || []).map((c) => (
-                    <span key={c} className="badge bg-light text-dark border me-1">
-                      {c}
-                    </span>
-                  ))}
-                </div>
+                <span className="badge bg-light text-dark border mb-3">{s.category}</span>
                 <p className="text-muted small mb-3">{s.description}</p>
                 <ul className="list-unstyled small text-muted mb-0">
                   <li>💰 Max Income: ₹{Number(s.max_income).toLocaleString("en-IN")}</li>
                   <li>📊 Min Marks: {s.min_percentage}%</li>
-                  <li>🎓 Course: {(s.course_type || []).join(", ")}</li>
+                  <li>🎓 Course: {s.course_type}</li>
                 </ul>
                 {s.website && (
                   <a
@@ -149,8 +141,8 @@ const ScholarshipsPage = () => {
                       {s.provider_type}
                     </span>
                   </td>
-                  <td>{(s.category || []).join(", ")}</td>
-                  <td>{(s.course_type || []).join(", ")}</td>
+                  <td>{s.category}</td>
+                  <td>{s.course_type}</td>
                   <td>₹{Number(s.max_income).toLocaleString("en-IN")}</td>
                   <td>{s.min_percentage}%</td>
                   <td>

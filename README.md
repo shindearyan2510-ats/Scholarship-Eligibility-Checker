@@ -21,6 +21,7 @@ ScholarshipEligibilityChecker/
 │   ├── routes/
 │   │   ├── scholarshipRoutes.js
 │   │   └── eligibilityRoutes.js
+│   ├── database.sql              # run this first to create DB + tables
 │   ├── Server.js
 │   └── package.json
 └── Frontend/
@@ -34,38 +35,22 @@ ScholarshipEligibilityChecker/
 ## Setup — step by step (VS Code)
 
 ### 1. Database
-1. Create an empty MySQL database, or select the database already provided by
-   your hosting provider.
-2. Set `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, and
-   `MYSQL_DATABASE` in the project-root `.env` file locally or in the hosting
-   provider's environment settings.
-3. On startup, the backend connects to the selected database and creates the
-   `scholarships` table if it does not exist. The database user must have
-   permission to create tables. Add scholarship records from the admin page.
+1. Open MySQL Workbench (or the `mysql` CLI).
+2. Run `Backend/database.sql` to create the `scholarship_checker` database,
+   the `scholarships` table, and local sample records.
 
-### 2. Backend
+### 2. Configure and start
 ```bash
-cd Backend
-npm install
-```
-Open `Backend/Config/db.js` and set your MySQL `password` (and `user` if different
-from `root`).
-
-Start the server:
-```bash
-npm run dev
-```
-It should print `🚀 Server running on port 5000`.
-
-### 3. Frontend
-Open a **second terminal**:
-```bash
-cd Frontend
 npm install
 npm run dev
 ```
-Vite will print a local URL, usually `http://localhost:5173`. Open it in your
-browser.
+Copy `.env.example` to `.env` and set your MySQL password if it is not blank.
+The frontend is available at `http://localhost:5173` and the API at
+`http://localhost:5000`. Local `.env` files are ignored by Git.
+
+For Render, set `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, and
+`MYSQL_DATABASE` in the service's **Environment** settings. `DB_HOST`,
+`DB_PORT`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` are also accepted.
 
 ## Admin Login
 The Admin panel is protected by a simple login page.
@@ -105,17 +90,8 @@ token/JWT instead.
 | DELETE | `/scholarships/:id`          | Delete a scholarship                  |
 
 ## Sample Data
-`Backend/database.sql` seeds 21 real, well-known scholarships — 11 Government
-(NMMS, PM YASASVI, CSSS, SC/ST Post-Matric, Minority Scholarship, INSPIRE,
-AICTE Pragati, CBSE Single Girl Child, ONGC, etc.) and 10 Private (Tata
-Capital Pankh, LIC Golden Jubilee, Reliance Foundation, Aditya Birla, HDFC
-Bank, Infosys Foundation, Bharti Airtel, Generation Google Scholarship,
-Sitaram Jindal Foundation, Vidyasaarathi). Each row also stores the
-scholarship's `website` — a link to its official page, shown on the
-Scholarships page, in eligibility results, and summarized on the About page.
-Income limits and marks % are representative — always verify current figures
-on [scholarships.gov.in](https://scholarships.gov.in) or the provider's own
-site before relying on them for a real application.
+`Backend/database.sql` creates local demo records for Open, OBC, SC, and ST
+categories. Replace them with verified scholarship details before production.
 
 If you're upgrading an existing database created before the `website` column
 existed, run:

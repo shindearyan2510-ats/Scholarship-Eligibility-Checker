@@ -1,14 +1,4 @@
 import db from "../Config/db.js";
-import { toStoredValue, fromStoredValue } from "../utils/arrayField.js";
-
-// Convert a raw DB row's category/course_type (stored as a JSON-array
-// string, e.g. '["SC","ST"]') into real arrays before it goes to the
-// frontend. Also copes with rows saved before multi-select existed.
-const formatRow = (row) => ({
-  ...row,
-  category: fromStoredValue(row.category),
-  course_type: fromStoredValue(row.course_type),
-});
 
 // GET all scholarships (used by Admin dashboard table)
 export const getScholarships = (req, res) => {
@@ -26,7 +16,7 @@ export const getScholarships = (req, res) => {
 
     res.json({
       success: true,
-      data: result.map(formatRow),
+      data: result,
     });
   });
 };
@@ -43,7 +33,7 @@ export const getScholarshipById = (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ success: false, message: "Scholarship not found" });
     }
-    res.json({ success: true, data: formatRow(result[0]) });
+    res.json({ success: true, data: result[0] });
   });
 };
 
@@ -60,15 +50,10 @@ export const addScholarship = (req, res) => {
     website,
   } = req.body;
 
-  // category/course_type now arrive as arrays from the multi-select
-  // checkboxes (a bare string is still accepted for backwards compatibility).
-  const categories = Array.isArray(category) ? category : category ? [category] : [];
-  const courseTypes = Array.isArray(course_type) ? course_type : course_type ? [course_type] : [];
-
-  if (!name || categories.length === 0 || max_income === undefined || min_percentage === undefined) {
+  if (!name || !category || max_income === undefined || min_percentage === undefined) {
     return res.status(400).json({
       success: false,
-      message: "name, at least one category, max_income and min_percentage are required",
+      message: "name, category, max_income and min_percentage are required",
     });
   }
 
@@ -83,8 +68,8 @@ export const addScholarship = (req, res) => {
     [
       name,
       provider_type || "Government",
-      toStoredValue(categories),
-      toStoredValue(courseTypes.length ? courseTypes : ["Any"]),
+      category,
+      course_type || "Any",
       max_income,
       min_percentage,
       description || "",
@@ -123,9 +108,6 @@ export const updateScholarship = (req, res) => {
     website,
   } = req.body;
 
-  const categories = Array.isArray(category) ? category : category ? [category] : [];
-  const courseTypes = Array.isArray(course_type) ? course_type : course_type ? [course_type] : [];
-
   const sql = `
     UPDATE scholarships
     SET name = ?, provider_type = ?, category = ?, course_type = ?, max_income = ?,
@@ -135,17 +117,7 @@ export const updateScholarship = (req, res) => {
 
   db.query(
     sql,
-    [
-      name,
-      provider_type,
-      toStoredValue(categories),
-      toStoredValue(courseTypes),
-      max_income,
-      min_percentage,
-      description,
-      website,
-      id,
-    ],
+    [name, provider_type, category, course_type, max_income, min_percentage, description, website, id],
     (err, result) => {
       if (err) {
         console.error("Update Error:", err);
