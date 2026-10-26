@@ -14,6 +14,8 @@ const db = mysql.createConnection({
   database: process.env.MYSQL_DATABASE || "scholarship_checker",
 });
 
+export let databaseReady = false;
+
 export const initializeDatabase = () =>
   new Promise((resolve, reject) => {
     db.connect((connectionError) => {
@@ -43,6 +45,7 @@ export const initializeDatabase = () =>
           }
 
           console.log("✅ Scholarship database schema ready");
+          databaseReady = true;
           resolve();
         }
       );

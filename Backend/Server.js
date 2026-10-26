@@ -7,7 +7,7 @@ import fs from "fs";
 
 import scholarshipRoutes from "./routes/scholarshipRoutes.js";
 import eligibilityRoutes from "./routes/eligibilityRoutes.js";
-import { initializeDatabase } from "./Config/db.js";
+import { databaseReady, initializeDatabase } from "./Config/db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,13 +35,27 @@ app.use(
 );
 app.use(express.json());
 
+app.use(["/scholarships", "/check-eligibility"], (req, res, next) => {
+  if (databaseReady) {
+    return next();
+  }
+
+  return res.status(503).json({
+    success: false,
+    message: "Database is unavailable. Check the MySQL environment variables and remote access permissions.",
+  });
+});
+
 app.use("/", scholarshipRoutes);
 app.use("/", eligibilityRoutes);
 
 app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "Scholarship Eligibility Checker API is running",
+  res.status(databaseReady ? 200 : 503).json({
+    success: databaseReady,
+    status: databaseReady ? "ready" : "database-unavailable",
+    message: databaseReady
+      ? "Scholarship Eligibility Checker API and database are ready"
+      : "API is running, but the database connection is unavailable",
   });
 });
 
@@ -62,16 +76,17 @@ if (fs.existsSync(distPath)) {
 
 const PORT = Number(process.env.PORT) || 5000;
 
+app.listen(PORT, () => {
+  console.log("=================================");
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌐 http://localhost:${PORT}`);
+  console.log("=================================");
+});
+
 initializeDatabase()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log("=================================");
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`🌐 http://localhost:${PORT}`);
-      console.log("=================================");
-    });
-  })
   .catch((error) => {
-    console.error("❌ Backend startup failed:", error.message);
-    process.exitCode = 1;
+    console.error(
+      "❌ Database unavailable; website is running without database features:",
+      error.code || error.message
+    );
   });
